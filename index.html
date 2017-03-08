@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mise en pratique de Docker - @Ausy 02/03/2017</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-slide-content h1 { font-size: 3em; }
+      .remark-slide-content h2 { font-size: 2em; }
+      .remark-slide-content h3 { font-size: 1.6em; }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+      }
+      li p { line-height: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      code {
+        background: #e7e8e2;
+        border-radius: 5px;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-code-line-highlighted     { background-color: #373832; }
+      .pull-left {
+        float: left;
+        width: 47%;
+      }
+      .pull-right {
+        float: right;
+        width: 47%;
+      }
+      .pull-right ~ p {
+        clear: both;
+      }
+      #slideshow .slide .content code {
+        font-size: 0.8em;
+      }
+      #slideshow .slide .content pre code {
+        font-size: 0.9em;
+        padding: 15px;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      /* Slide-specific styling */
+      #slide-inverse .footnote {
+        bottom: 12px;
+        left: 20px;
+      }
+      #slide-how .slides {
+        font-size: 0.9em;
+        position: absolute;
+        top:  151px;
+        right: 140px;
+      }
+      #slide-how .slides h3 {
+        margin-top: 0.2em;
+      }
+      #slide-how .slides .first, #slide-how .slides .second {
+        padding: 1px 20px;
+        height: 90px;
+        width: 120px;
+        -moz-box-shadow: 0 0 10px #777;
+        -webkit-box-shadow: 0 0 10px #777;
+        box-shadow: 0 0 10px #777;
+      }
+      #slide-how .slides .first {
+        background: #fff;
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        z-index: 1;
+      }
+      #slide-how .slides .second {
+        position: relative;
+        background: #fff;
+        z-index: 0;
+      }
+
+      /* Two-column layout */
+      .left-column {
+        color: #777;
+        width: 20%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 75%;
+        float: right;
+        padding-top: 1em;
+      }
+      img[alt=DockerTitleLogo] { width: 420px; }
+      img[alt=AusyLogo] { margin-bottom: 40px; width: 280px; }
+      img[alt=BuildShipRun] { width: 750px; }
+      img[alt=DockerConcepts] { width: 750px; }
+      img[alt=Concepts] { width: 750px; }
+      img[alt=ScreenshotRobomongo] {width: 750px; }
+      img[alt=ScreenshotRocketChat] {width: 650px; }
+      img[alt=ScreenshotHubot] {width: 650px; }
+      img[alt=ScreenshotTraefik] {width: 650px; }
+      img[alt=ScreenshotScale] {width: 450px; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+name: inverse
+layout: true
+class: center, middle, inverse
+---
+# Mise en pratique de Docker
+![DockerTitleLogo](images/docker-large-h-trans.png)
+![AusyLogo](images/Logo_Ausy.png)
+### par [Thomas Sarboni](mailto:max-k@post.com)
+.footnote[Shake Your Brain<br />.red[©] [Ausy](http://www.ausy.fr) 2017]
+---
+# Euh... Docker c'est quoi déjà ?
+---
+layout: false
+class: inverse
+## Un conteneur Docker c'est quoi ?
+ - Un moyen d'isoler des ressources
+
+## Pourquoi un conteneur Docker ?
+ - Parce-que c'est léger
+ - Parce-que c'est pratique
+ - Parce-que c'est reproductible
+
+![BuildShipRun](images/docker-build-ship-run.png)
+.right[[source](http://www.slideshare.net/cm13/introduction-to-docker-48784005)]
+---
+layout: true
+template: inverse
+---
+# Les concepts
+---
+![DockerConcepts](images/DockerConcepts.jpg)
+.right[[source](https://www.computer.org/web/the-clear-cloud/content?g=7477973&type=blogpost&urlTitle=architecting-application-deployment-with-containers)]
+---
+![Layers](images/container-layers.jpg)
+.right[[source](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/)]
+---
+# Petit tour d'horizon
+---
+layout: false
+## Téléchargement d'une image
+```.bash
+$ docker pull busybox
+Using default tag: latest
+latest: Pulling from library/busybox
+4b0bc1c4050b: Pull complete
+Digest: sha256:817a12c32a39bbe394944ba49de563e085f1d3c5266eb8e9723256bc4448680e
+Status: Downloaded newer image for busybox:latest
+```
+## Affichage des images téléchargées
+```bash
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+busybox             latest              7968321274dc        6 weeks ago         1.11 MB
+```
+## Lancement d'une image téléchargée
+```.bash
+$ docker run -ti --rm busybox
+/ # exit
+```
+---
+## Lancement d'une image non-téléchargée
+```.bash
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+78445dd45222: Already exists
+Digest: sha256:c5515758d4c5e1e838e9cd307f6c6a0d620b5e07e6f927b07d05f6d12a1ac8d7
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://cloud.docker.com/
+```
+---
+## Lancement d'un conteneur en tâche de fond
+```.bash
+$ docker run -d busybox sleep 1000
+9ab4e366e3b39724b54d061cd026735a0648737429ebde696a947940fbc07732
+```
+## Afficher les conteneurs en cours d'exécution
+```.bash
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+9ab4e366e3b3        busybox             "sleep 1000"        38 seconds ago      Up 38 seconds                           quirky_keller
+```
+## Arrêter un conteneur
+```.bash
+$ docker stop 9ab4e366e3b3
+9ab4e366e3b3
+```
+---
+## Afficher les conteneurs arrêtés
+```.bash
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                            PORTS               NAMES
+9ab4e366e3b3        busybox             "sleep 1000"        3 minutes ago       Exited (137) About a minute ago                       quirky_keller
+5411cfea5bc8        hello-world         "/hello"            9 minutes ago       Exited (0) 9 minutes ago
+```
+## Supprimer des conteneurs
+```.bash
+$ docker rm 9ab4e366e3b3 5411cfea5bc8
+9ab4e366e3b3
+5411cfea5bc8
+```
+## Vérification
+```.bash
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+```
+---
+template: inverse
+# Attention ... question !
+---
+## Affichage des images téléchargées
+```.bash
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-world         latest              48b5124b2768        6 weeks ago         1.84 kB
+busybox             latest              7968321274dc        6 weeks ago         1.11 MB
+```
+## Suppression des images
+```.bash
+$ docker rmi hello-world busybox
+Untagged: hello-world:latest
+Untagged: hello-world@sha256:c5515758d4c5e1e838e9cd307f6c6a0d620b5e07e6f927b07d05f6d12a1ac8d7
+Deleted: sha256:48b5124b2768d2b917edcb640435044a97967015485e812545546cbed5cf0233
+Deleted: sha256:98c944e98de8d35097100ff70a31083ec57704be0991a92c51700465e4544d08
+Untagged: busybox:latest
+Untagged: busybox@sha256:817a12c32a39bbe394944ba49de563e085f1d3c5266eb8e9723256bc4448680e
+Deleted: sha256:7968321274dc6b6171697c33df7815310468e694ac5be0ec03ff053bb135e768
+Deleted: sha256:38ac8d0f5bb30c8b742ad97a328b77870afaec92b33faf7e121161bc78a3fec8
+```
+---
+template: inverse
+# Cas pratique : Bootstrap starter template
+---
+layout: false
+## Objectif
+Faire tourner le starter template de bootstrap dans une image Apache
+## Contenu de l'application
+```.bash
+exemple-1-bootstrap $ tree -d
+.
+└── htdocs
+    ├── assets
+    │   ├── css
+    │   └── js
+    └── bootstrap-3.3.7-dist
+        ├── css
+        ├── fonts
+        └── js
+
+8 directories
+```
+---
+## Première approche : Utilisation d'un volume
+```.bash
+$ docker run -ti --rm -p 80:80 -v /home/tsarboni/projets/prez-docker-ausy-2/exemple-1-bootstrap/htdocs:/usr/local/apache2/htdocs httpd:2.4
+Unable to find image 'httpd:2.4' locally
+2.4: Pulling from library/httpd
+693502eb7dfb: Pull complete
+07ea63cb951e: Pull complete
+e523938ce387: Pull complete
+35123eac43ec: Pull complete
+64b018d9be38: Pull complete
+bd9836efbe75: Pull complete
+ddb10b12e5d3: Pull complete
+Digest: sha256:4612fba4347bd87eaeecd5c522d844f26cc4065b45eef9291277497946b7a86c
+Status: Downloaded newer image for httpd:2.4
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+[Thu Mar 02 12:30:04.419034 2017] [mpm_event:notice] [pid 1:tid 140293708502912] AH00489: Apache/2.4.25 (Unix) configured -- resuming normal operations
+[Thu Mar 02 12:30:04.419171 2017] [core:notice] [pid 1:tid 140293708502912] AH00094: Command line: 'httpd -D FOREGROUND'
+```
+### Ctrl+c pour quitter
+---
+## Vérification
+![Bootstrap](images/bootstrap.png)
+---
+## Deuxième approche : Dériver une image
+```.dockerfile
+# On souhaite utiliser l'image de base Apache2
+FROM httpd:2.4
+# La personne en charge de la maintenance
+MAINTAINER Thomas SARBONI <max-k@post.com>
+# On copie nos sources dans ce répertoire
+ADD htdocs/ /usr/local/apache2/htdocs/
+```
+### Build de l'image
+```.bash
+$ docker build -t maxk69/bootstrap .
+Sending build context to Docker daemon 1.683 MB
+Step 1/3 : FROM httpd:2.4
+ ---> f316d5949bb0
+Step 2/3 : MAINTAINER Thomas SARBONI <max-k@post.com>
+ ---> Using cache
+ ---> 7ad5543598fb
+Step 3/3 : ADD htdocs/ /usr/local/apache2/htdocs/
+ ---> 420a1ae59259
+Removing intermediate container 5e37aa9da8d7
+Successfully built 420a1ae59259
+```
+---
+## Lancement de notre image personnalisée
+```.bash
+$ docker run -d -p 80:80 --rm maxk69/bootstrap
+```
+## Vérification
+![Bootstrap](images/bootstrap.png)
+---
+layout: true
+template: inverse
+---
+# Rappels concernant les micro-services
+---
+template: inverse
+## Micro-services
+![MicroServices](images/alter-ways-digitalks-docker-des-conteneurs-pour-tout-faire-50-638.jpg)
+.right[[source](https://help.mypurecloud.com/articles/microservice/)]
+---
+## 12 Factors
+![12factors](images/12-factor-scala-10-638.jpg)
+.right[[source](http://www.slideshare.net/jkutner/12-factor-scala)]
+https://12factor.net/fr/
+---
+# Workshop: Composition
+---
+# Un exemple concret : Rocket.Chat
+![RocketChat](images/rocketchat.svg)
+---
+# Les images
+---
+layout: false
+## Les images du TP
+
+- [https://hub.docker.com/_/mongo/](https://hub.docker.com/_/mariadb/)
+
+- [https://hub.docker.com/r/rocketchat/rocket.chat/](https://hub.docker.com/r/rocketchat/rocket.chat/)
+
+- [https://hub.docker.com/r/rocketchat/hubot-rocketchat/](https://hub.docker.com/r/rocketchat/hubot-rocketchat/)
+
+## En bonus
+
+- [https://hub.docker.com/r/containous/traefik/](https://hub.docker.com/r/containous/traefik/)
+
+## Téléchargeons nos images
+
+```.bash
+docker pull mariadb rocketchat/rocket.chat rocketchat/hubot-rocketchat \
+containous/traefik
+```
+---
+template: inverse
+# Docker-compose
+---
+## Définition
+* Configuration centralisé d'un ensemble de conteneurs
+* Gestion des dépendances
+* Gestion de la communication inter-conteneur
+
+## Caractéristiques
+* Configuration centralisée au format YAML
+* Ecrit en Python
+---
+template: inverse
+# Fichier docker-compose.yml
+---
+## Trois composants principaux
+* Service
+* Reseaux
+* Volumes
+
+## Attention, version 2
+* Changement de format depuis la version 1.6 et Docker 1.10.
+
+* Les fichiers doivent conternir le block suivant sur la première ligne :
+```.bash
+version: '2'
+```
+---
+template: inverse
+# Notre premier service : MongoDB
+---
+## Le fichier docker-compose.yml
+```.yml
+version: '2'
+services:
+  mongo:
+    image: mongo
+    command: mongod --smallfiles --oplogSize 128
+```
+## Jouons un peu avec
+### Démarrage
+```.bash
+docker-compose up -d
+```
+### Nettoyage
+```.bash
+docker-compose down
+```
+---
+layout: true
+template: inverse
+---
+## Notre environnement est fonctionnel
+![ScreenshotRobomongo](images/Robomongo.png)
+---
+# Un peu de pratique
+## Quelques commandes
+.footnote[
+docker-compose ps
+
+docker-compose logs
+]
+---
+# Ajoutons un conteneur : Rocket.Chat
+---
+layout: false
+## Le service
+```.yml
+services:
+#[...]
+  rocketchat:
+    image: rocketchat/rocket.chat
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:3000
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+    ports:
+      - "3000:3000"
+```
+---
+layout: true
+template: inverse
+---
+# Encore un peu de pratique
+## Quelques commandes
+.footnote[
+docker exec -ti
+
+docker-compose kill
+
+docker-compose rm
+]
+---
+## Notre environnement est fonctionnel
+![ScreenshotRocketChat](images/Rocketchat.png)
+---
+# Ajoutons encore un conteneur : Hubot
+---
+layout: false
+## Le service
+```.yml
+services:
+#[...]
+  hubot:
+    image: rocketchat/hubot-rocketchat
+    environment:
+      - ROCKETCHAT_URL=rocketchat:3000
+      - ROCKETCHAT_ROOM=GENERAL
+      - ROCKETCHAT_USER=bot
+      - ROCKETCHAT_PASSWORD=botpassword
+      - BOT_NAME=bot
+      - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-diagnostics
+    depends_on:
+      - rocketchat
+    ports:
+      - 3001:8080
+```
+---
+layout: true
+template: inverse
+---
+## Notre environnement est fonctionnel
+![ScreenshotHubot](images/Hubot.png)
+---
+# Un petit bonus : Traefik
+---
+layout: false
+## Le service
+```.yml
+services:
+#[...]
+  traefik:
+    image: traefik
+    command: --web --docker --docker.domain=localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+```
+---
+## Modification du service rocketchat
+```.yml
+services:
+#[...]
+  rocketchat:
+    image: rocketchat/rocket.chat
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:3000
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+  labels:
+    - "traefik.backend=rocketchat"
+    - "traefik.frontend.rule=Host:rocketchat.localhost"
+```
+## Modification du fichier /etc/hosts
+```.bash
+127.0.0.1 rocketchat.localhost
+```
+---
+layout: true
+template: inverse
+---
+## Notre environnement est fonctionnel
+![ScreenshotTraefik](images/Traefik.png)
+---
+# Mise à l'échelle
+---
+layout: false
+## Passage à l'échelle avec Docker-compose
+```.bash
+docker-compose scale rocketchat=2
+```
+---
+### Mise à jour des backends
+![ScreenshotScale](images/Scale.png)
+---
+name: last-page
+template: inverse
+## That's all folks (for now)!
+
+Présentation créée avec [remark](http://github.com/gnab/remark).
+
+[https://github.com/max-k/prez-docker-ausy-2](https://github.com/max-k/prez-docker-ausy-2)
+    </textarea>
+    <script src="js/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
