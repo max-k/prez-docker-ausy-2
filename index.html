@@ -427,7 +427,7 @@ version: '2'
 services:
   mongo:
     image: mongo
-    command: mongod --smallfiles --oplogSize 128
+    command: mongod --smallfiles --oplogSize 128 --replSet "rs0"
 ```
 ## Jouons un peu avec
 ### Démarrage
@@ -469,6 +469,16 @@ services:
     ports:
       - "3000:3000"
 ```
+# Attention : problème de réplica set
+Depuis la création de la première version de cette présentation, RocketChat a évolué et nécessite désormais l'initialisation d'un réplica set mongodb.
+
+Cette manipulation n'a pas encore été automatisée dans l'image mongodb et nécessite une petit manipulation lors du premier démarrage de l'ensemble compose.
+
+Voici la liste de commandes à effectuer pour lancer l'ensemble :
+* cd exemple-2-rocketchat/step2-rocketchat
+* docker-compose up -d mongo
+* docker exec -ti step2rocketchat_mongo_1 mongo --eval "rs.initiate()"
+* docker-compose up -d
 ---
 layout: true
 template: inverse
@@ -507,6 +517,17 @@ services:
     ports:
       - 3001:8080
 ```
+---
+# Attention : problème de réplica set
+Depuis la création de la première version de cette présentation, RocketChat a évolué et nécessite désormais l'initialisation d'un réplica set mongodb.
+
+Cette manipulation n'a pas encore été automatisée dans l'image mongodb et nécessite une petit manipulation lors du premier démarrage de l'ensemble compose.
+
+Voici la liste de commandes à effectuer pour lancer l'ensemble :
+* cd exemple-2-rocketchat/step3-hubot
+* docker-compose up -d mongo
+* docker exec -ti step3hubot_mongo_1 mongo --eval "rs.initiate()"
+* docker-compose up -d
 ---
 layout: true
 template: inverse
@@ -551,6 +572,17 @@ services:
 ```.bash
 127.0.0.1 rocketchat.localhost
 ```
+---
+# Attention : problème de réplica set
+Depuis la création de la première version de cette présentation, RocketChat a évolué et nécessite désormais l'initialisation d'un réplica set mongodb.
+
+Cette manipulation n'a pas encore été automatisée dans l'image mongodb et nécessite une petit manipulation lors du premier démarrage de l'ensemble compose.
+
+Voici la liste de commandes à effectuer pour lancer l'ensemble :
+* cd exemple-2-rocketchat/step4-traefik
+* docker-compose up -d mongo
+* docker exec -ti step4traefik_mongo_1 mongo --eval "rs.initiate()"
+* docker-compose up -d
 ---
 layout: true
 template: inverse
